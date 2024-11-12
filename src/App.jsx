@@ -30,11 +30,15 @@ function App() {
 
       <IndicatorCard
         title="Pi Cycle Top"
-        value={`${currentData.Pi_Cycle_Distance.toFixed(2)}%`}
-        description="Distance between 111MA and 350MA*2"
+        value={`BTC Price: $${currentData.Close.toLocaleString()} | 111MA: $${currentData.MA111.toLocaleString()} / 350MA*2: $${currentData.MA350_x2.toLocaleString()}`}
+        description="111MA and 350MA*2 with BTC Price"
         historicalData={historicalData}
-        dataKey="Pi_Cycle_Distance"
-        status={getPiCycleStatus(currentData.Pi_Cycle_Distance)}
+        multiLine={true}
+        dataKeys={[
+          { key: "Close", color: "#000000" },
+          { key: "MA111", color: "#FF0000" },
+          { key: "MA350_x2", color: "#0000FF" },
+        ]}
       />
 
       <IndicatorCard
