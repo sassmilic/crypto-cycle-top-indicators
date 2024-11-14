@@ -1,18 +1,45 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import IndicatorCard from "./components/IndicatorCard";
 import processedData from "../data/processed/btc_usd/daily_indicators.json";
 import "./App.css";
 
 function App() {
+  const [historicalData, setHistoricalData] = useState(processedData.daily);
   const [currentData, setCurrentData] = useState(null);
-  const historicalData = processedData.daily;
 
+  // Function to fetch latest data point
+  const fetchLatestData = useCallback(async () => {
+    try {
+      const response = await fetch("/api/latest");
+      const newDataPoint = await response.json();
+
+      // Only update if we have new data
+      if (
+        newDataPoint.Timestamp >
+        historicalData[historicalData.length - 1].Timestamp
+      ) {
+        // Update historical data efficiently by adding new point
+        setHistoricalData((prevData) => [...prevData, newDataPoint]);
+        setCurrentData(newDataPoint);
+      }
+    } catch (error) {
+      console.error("Error fetching latest data:", error);
+    }
+  }, [historicalData]);
+
+  // Initial setup
   useEffect(() => {
-    // Get the most recent data point
     if (historicalData && historicalData.length > 0) {
       setCurrentData(historicalData[historicalData.length - 1]);
     }
   }, []);
+
+  // Poll for updates every minute
+  useEffect(() => {
+    const intervalId = setInterval(fetchLatestData, 60000); // 60000ms = 1 minute
+
+    return () => clearInterval(intervalId); // Cleanup on unmount
+  }, [fetchLatestData]);
 
   if (!currentData) {
     return <div>Loading...</div>;

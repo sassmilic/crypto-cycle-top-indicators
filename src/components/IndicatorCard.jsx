@@ -156,8 +156,15 @@ const IndicatorCard = ({
       </div>
       {historicalData && (
         <div className="chart-container">
-          <ResponsiveContainer width="100%" height={400}>
-            <LineChart data={historicalData}>
+          <ResponsiveContainer
+            width="100%"
+            height={400}
+            key={`chart-${dataKey}-${historicalData.length}`}
+          >
+            <LineChart
+              data={historicalData}
+              updateId={`${historicalData.length}`}
+            >
               <XAxis
                 dataKey="Timestamp"
                 tickFormatter={formatXAxis}
